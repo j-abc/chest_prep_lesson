@@ -87,9 +87,9 @@ def prepare_models_list():
         models_list.append(['vgg', {'trainable':trainable}, {'augment':1}])
     return models_list
 
-def single_iter(run_row, run_now = False):
+def single_iter(run_row, run_now = False, run_test = True):
     model_type, model_params, run_params = run_row
     model, model_name = choose_model(model_type, model_params)
     model_name = prepare_model_name(model_name, **run_params)
-    _ = run_model(model = model, model_name = model_name, **run_params, run_now = run_now, results_dir = '/home/jupyter/models/')
+    _ = run_model(model = model, model_name = model_name, **run_params, run_now = run_now, results_dir = '/home/jupyter/models/', run_test = run_test)
     reset_keras()
