@@ -55,7 +55,7 @@ def get_val_data_generator(color = 'rgb'):
     val_generator = val_datagen.flow_from_directory(
           image_directory, 
           target_size=image_size,
-          batch_size=200,
+          batch_size=400,
           color_mode=color, # depends on the dataset
           class_mode=class_mode)    
     return val_generator
