@@ -3,7 +3,7 @@ from generators import *
 from helpers import *
 from models import *
 
-def run_model(model, model_name, augment, results_dir, run_now = True, run_test = True):
+def run_model(model, model_name, augment, results_dir, run_now = True, run_type = 'test'):
     '''
     takes in...
     runs our model
@@ -21,12 +21,11 @@ def run_model(model, model_name, augment, results_dir, run_now = True, run_test 
     
     print('\tFitting model...')
     
-    if run_test:
-        steps_per_epoch  = 1
-        epochs           = 1
-    else: 
-        steps_per_epoch = 121
-        epochs          = 20
+    steps_dict = {'test': (1,1),
+                  'full': (121,20),
+                  'track_iters':(1,121)}
+    
+    steps_per_epoch, epochs = steps_dict[run_type]
 
     # run our model
     if run_now:
@@ -61,7 +60,9 @@ def choose_model(model_type, params):
     model_dict = {'log':get_log_model,
                   'fcc':get_fcc_model,
                   'cnn':get_cnn_model,
-                  'vgg':get_vgg_model}
+                  'vgg':get_vgg_model,
+                  'fcc_sgd':get_fcc_sgd_model,
+                  'log_sgd':get_log_sgd_model}
     return model_dict[model_type](**params)
 
 def prepare_models_list():
@@ -85,11 +86,15 @@ def prepare_models_list():
     # vgg
     for trainable in [1, 0]:
         models_list.append(['vgg', {'trainable':trainable}, {'augment':1}])
+    
+    # sgd versions of log and fcc
+    models_list.append(['log_sgd', {}, {'augment': 0}])
+    models_list.append(['fcc_sgd', {}, {'augment': 0}])
     return models_list
 
-def single_iter(run_row, run_now = False, run_test = True):
+def single_iter(run_row, run_now = False, run_type = 'test', results_dir = '/home/jupyter/models/'):
     model_type, model_params, run_params = run_row
     model, model_name = choose_model(model_type, model_params)
     model_name = prepare_model_name(model_name, **run_params)
-    _ = run_model(model = model, model_name = model_name, **run_params, run_now = run_now, results_dir = '/home/jupyter/models/', run_test = run_test)
+    _ = run_model(model = model, model_name = model_name, **run_params, run_now = run_now, results_dir = results_dir, run_type = run_type)
     reset_keras()
